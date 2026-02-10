@@ -1,0 +1,32 @@
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Vector databases (local)
+faiss_db/
+app_db/
+test_db/
+
+# Temporary files and uploads
+temp_uploads/
+figures/
+*.pdf
+*.txt
+!README.md
+!requirements.txt
+!packages.txt
+
+# Chat history
+chats/
+
+# Streamlit config (if you want to keep secrets local)
+.streamlit/
