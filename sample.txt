@@ -1,0 +1,11 @@
+LangChain is a framework designed to facilitate the creation of applications using large language models (LLMs). 
+It provides tools for document loading, text splitting, embeddings, and vector stores.
+
+RAG (Retrieval-Augmented Generation) is a technique that gives an LLM access to external data. 
+This allows the model to answer questions with high accuracy and reduced hallucinations.
+
+Google Gemini is a multimodal AI model developed by Google DeepMind. 
+It can process text, images, video, and audio.
+Wait, Gemini 1.5 Flash is highly efficient. 
+Gemini 2.0 Flash is the latest version.
+The user seems to prefer Gemini 2.5 Flash if it exists or works for them.
