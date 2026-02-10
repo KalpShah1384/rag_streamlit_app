@@ -141,3 +141,76 @@ Context:
     )
 
     return rag_chain
+def get_rag_chain_with_memory_and_sources(persist_directory: str = "faiss_db"):
+    """
+    Creates a RAG chain that handles conversation history AND returns sources.
+    """
+    vector_store = load_vector_store(persist_directory)
+    retriever = vector_store.as_retriever(search_kwargs={"k": 5})
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+
+    # 1. Contextualize Question
+    contextualize_q_system_prompt = """Given a chat history and the latest user question \
+which might reference context in the chat history, formulate a standalone question \
+which can be understood without the chat history. Do NOT answer the question, \
+just reformulate it if needed and otherwise return it as is."""
+    
+    contextualize_q_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", contextualize_q_system_prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("human", "{question}"),
+        ]
+    )
+    contextualize_q_chain = contextualize_q_prompt | llm | StrOutputParser()
+
+    # 2. QA Prompt
+    qa_system_prompt = """You are an AI Knowledge Assistant. Use the following pieces of retrieved context to answer the question. \
+If you don't know the answer, just say that you don't know, don't try to make up an answer. \
+Keep the answer concise and professional.
+
+Context:
+{context}"""
+
+    qa_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", qa_system_prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("human", "{question}"),
+        ]
+    )
+    
+    qa_chain = qa_prompt | llm | StrOutputParser()
+
+    # 3. Custom Invoke Function
+    def invoke_chain(input_data):
+        question = input_data["question"]
+        chat_history = input_data.get("chat_history", [])
+        
+        # Reformulate question if history exists
+        if chat_history:
+            standalone_question = contextualize_q_chain.invoke({
+                "chat_history": chat_history,
+                "question": question
+            })
+        else:
+            standalone_question = question
+            
+        # Retrieve docs
+        docs = retriever.invoke(standalone_question)
+        context = format_docs(docs)
+        
+        # Generate Answer
+        answer = qa_chain.invoke({
+            "context": context,
+            "chat_history": chat_history,
+            "question": question
+        })
+        
+        return {
+            "answer": answer,
+            "sources": list(set([doc.metadata.get("source", "Unknown") for doc in docs])),
+            "chunks": [doc.page_content for doc in docs]
+        }
+
+    return invoke_chain
