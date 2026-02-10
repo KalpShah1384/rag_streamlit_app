@@ -4,10 +4,10 @@ A document-aware intelligence system built with LangChain and RAG (Retrieval-Aug
 
 ## 🚀 Key Features
 
-- **Document Ingestion**: Seamlessly load and process PDF and TXT files.
+- **Document Ingestion**: High-fidelity processing of PDF and TXT files, including support for **tables and images** via Unstructured.
 - **RAG Pipeline**: Advanced retrieval logic ensuring grounded and hallucination-free answers.
-- **Conversation Memory**: Remembers context for follow-up questions.
-- **Modern UI**: Clean and interactive interface built with Streamlit.
+- **Conversation Memory**: Remembers context and past conversations across sessions.
+- **Modern UI**: Clean and interactive interface built with Streamlit with a conversation history sidebar.
 - **Structured Output**: Support for JSON and Pydantic parsers for reliable data extraction.
 
 ## 🛠️ Technology Stack
