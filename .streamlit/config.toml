@@ -1,12 +1,9 @@
 [server]
 maxUploadSize = 500
-enableCORS = false
-enableXsrfProtection = false
-address = "0.0.0.0"
+# Disable websocket compression for mobile stability
 enableWebsocketCompression = false
-allowRunOnSave = true
-# Increase connection timeout for mobile stability
-runOnSave = true
+# Allow Streamlit Cloud to manage address/port
+# address = "0.0.0.0" 
 
 [theme]
 primaryColor = "#F63049"
