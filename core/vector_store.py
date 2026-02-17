@@ -10,7 +10,7 @@ load_dotenv()
 
 def get_embeddings_model():
     """Returns the Google Generative AI embeddings model."""
-    return GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    return GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 
 def create_vector_store(documents: List[Document], persist_directory: str = "faiss_db"):
     """Creates a FAISS vector store from documents and persists it."""
