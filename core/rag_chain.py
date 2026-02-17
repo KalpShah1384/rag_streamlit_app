@@ -5,6 +5,8 @@ from langchain_core.runnables import RunnablePassthrough
 from core.vector_store import load_vector_store
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+import time
 
 def format_docs(docs):
     """Formats a list of documents into a single string for context."""
@@ -182,7 +184,12 @@ Context:
     
     qa_chain = qa_prompt | llm | StrOutputParser()
 
-    # 3. Custom Invoke Function
+    # 3. Custom Invoke Function with Retry Logic
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        # You can add specific filters here if needed
+    )
     def invoke_chain(input_data):
         question = input_data["question"]
         chat_history = input_data.get("chat_history", [])
@@ -196,7 +203,7 @@ Context:
         else:
             standalone_question = question
             
-        # Retrieve docs
+        # Retrieve docs (This is where embeddings are called)
         docs = retriever.invoke(standalone_question)
         context = format_docs(docs)
         
