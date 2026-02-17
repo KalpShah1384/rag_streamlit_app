@@ -371,7 +371,11 @@ with st.sidebar:
             progress_bar.progress(0.8)
             
             status_text.text("💾 Persisting to Vector DB...")
-            create_vector_store(chunks, persist_directory="app_db")
+            try:
+                create_vector_store(chunks, persist_directory="app_db")
+            except Exception as e:
+                st.error(f"FATAL: Vector Store Error: {str(e)}")
+                st.stop()
             
             progress_bar.progress(1.0)
             status_text.text("✅ Ingestion Complete!")
