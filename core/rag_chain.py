@@ -184,27 +184,40 @@ Context:
     
     qa_chain = qa_prompt | llm | StrOutputParser()
 
-    # 3. Custom Invoke Function with Retry Logic
+    # 3. Custom Invoke Function with Robust Retry Logic
     @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=2, max=10),
-        # You can add specific filters here if needed
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=1, min=2, max=15),
     )
     def invoke_chain(input_data):
         question = input_data["question"]
         chat_history = input_data.get("chat_history", [])
         
+        standalone_question = question
         # Reformulate question if history exists
         if chat_history:
-            standalone_question = contextualize_q_chain.invoke({
-                "chat_history": chat_history,
-                "question": question
-            })
-        else:
-            standalone_question = question
+            try:
+                standalone_question = contextualize_q_chain.invoke({
+                    "chat_history": chat_history,
+                    "question": question
+                })
+                # If AI returned something empty or invalid, fallback
+                if not standalone_question or len(standalone_question.strip()) < 2:
+                    standalone_question = question
+            except Exception:
+                standalone_question = question
             
-        # Retrieve docs (This is where embeddings are called)
-        docs = retriever.invoke(standalone_question)
+        # Retrieve docs (Embedding call happens here)
+        try:
+            docs = retriever.invoke(standalone_question)
+        except Exception as e:
+            # If the reformulated question crashes the embedding engine, 
+            # try one last time with the raw original question
+            if chat_history:
+                docs = retriever.invoke(question)
+            else:
+                raise e
+                
         context = format_docs(docs)
         
         # Generate Answer
