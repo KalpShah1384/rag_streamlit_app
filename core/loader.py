@@ -17,14 +17,13 @@ else:
 
 def load_pdf(file_path: str) -> List[Document]:
     """
-    Loads a PDF file and returns a list of Documents using Unstructured.
-    Uses 'hi_res' strategy to identify and extract tables correctly.
+    Loads a PDF file optimized for Cloud/Mobile stability.
+    Uses 'fast' strategy to prevent memory (OOM) crashes on 1GB RAM targets.
     """
+    # Use 'fast' for better performance and lower RAM usage
     loader = UnstructuredPDFLoader(
         file_path,
-        strategy="hi_res",
-        infer_table_structure=True,
-        chunking_strategy="basic", # Keep basic document structure for now
+        strategy="fast", 
     )
     return loader.load()
 

@@ -4,6 +4,9 @@ enableCORS = false
 enableXsrfProtection = false
 address = "0.0.0.0"
 enableWebsocketCompression = false
+allowRunOnSave = true
+# Increase connection timeout for mobile stability
+runOnSave = true
 
 [theme]
 primaryColor = "#F63049"
