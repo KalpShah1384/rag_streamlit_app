@@ -4,13 +4,16 @@ from langchain_core.documents import Document
 import os
 import pytesseract
 
-# Explicitly set paths for Windows if needed
+# Handle Tesseract Path for Windows; Linux (Streamlit Cloud) should have it in PATH
 TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 TESSDATA_PREFIX = r"C:\Program Files\Tesseract-OCR\tessdata"
 
-if os.path.exists(TESSERACT_PATH):
+if os.name == 'nt' and os.path.exists(TESSERACT_PATH):
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
     os.environ["TESSDATA_PREFIX"] = TESSDATA_PREFIX
+else:
+    # On Linux/Cloud, we rely on the system installation from packages.txt
+    pass
 
 def load_pdf(file_path: str) -> List[Document]:
     """

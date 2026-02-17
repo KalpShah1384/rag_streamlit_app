@@ -28,5 +28,5 @@ figures/
 # Chat history
 chats/
 
-# Streamlit config (if you want to keep secrets local)
-.streamlit/
+# Streamlit config (Keep config, ignore secrets)
+.streamlit/secrets.toml
