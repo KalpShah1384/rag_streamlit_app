@@ -1,113 +1,98 @@
 # 🧠 AI Knowledge Hub PRO
 
-A high-performance AI Assistant designed for deep document analysis, specialized in processing large PDFs (up to 500MB) with support for **tables, images, and complex layouts**.
-
-![Python](https://img.shields.io/badge/Python-3.14+-blue.svg)
-![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red.svg)
-![LangChain](https://img.shields.io/badge/Framework-LangChain-green.svg)
-![Gemini](https://img.shields.io/badge/LLM-Gemini_2.5_Flash-orange.svg)
-
-## 🚀 Key Features
-
-- **High-Fidelity Ingestion**: Uses `Unstructured` + `Tesseract OCR` for extracting text from tables and complex images within PDFs.
-- **200MB+ Support**: Optimized for large documents with a 500MB upload capacity.
-- **Multimodal Intelligence**: Powered by **Gemini 2.5 Flash** for understanding both text and visual context.
-- **Smart Conversation History**: Remembers context across sessions with a local persistent storage system.
-- **Premium UI**: A sleek, responsive dashboard with custom CSS, source citations, and indexed document tracking.
-- **Source Grounding**: Every answer is backed by specific "Source Pins" (📍) linking back to the original document.
+An advanced RAG (Retrieval-Augmented Generation) system built with **Streamlit**, **LangChain**, and **Google Gemini**. This system is designed for professional document intelligence, supporting high-resolution PDF parsing, table extraction, and image OCR.
 
 ---
 
-## 🏗️ Architecture & Flow
+## 📊 Data Flow Diagram (DFD)
 
-### System Flow Diagram
+This diagram explains how data moves from your local documents to the AI's response.
+
 ```mermaid
 graph TD
-    subgraph "Data Ingestion"
-        A[User Uploads PDF] --> B[Unstructured Hi-Res Loader]
-        B --> C[Recursive Text Splitter]
-        C --> D[Gemini Embeddings]
-        D --> E[FAISS Vector Store]
+    subgraph "Phase 1: Ingestion (Knowledge Base)"
+        A[User Uploads PDF] --> B[core/loader.py: Hi-Res Parsing/OCR]
+        B --> C[core/splitter.py: Logical Chunking]
+        C --> D[core/vector_store.py: Google Embeddings]
+        D --> E[(FAISS Vector DB: 'app_db')]
     end
 
-    subgraph "Query Intelligence"
-        F[User Question] --> G[Question Contextualizer]
-        G --> H[Similarity Search]
-        H --> I[Context Augmentation]
-        I --> J[Gemini 2.5 Flash LLM]
-        J --> K[Answer + Cited Sources]
+    subgraph "Phase 2: Retrieval & Generation"
+        F[User Asks Question] --> G[core/rag_chain.py: Contextualizer]
+        H[(core/history.py: Chat History)] --> G
+        G --> I[Standalone Question]
+        I --> J[Vector Store Search]
+        E --> J
+        J --> K[Retrieved Context Docs]
+        K --> L[Augmented Prompt]
+        L --> M[Gemini 1.5 Flash LLM]
+        M --> N[Final Answer + Sources]
     end
 
-    E -.-> H
-    K --> L[Persistent Chat History]
+    N --> O[Streamlit UI: app.py]
 ```
-
-### Module Breakdown
-| Module | File | Description |
-| :--- | :--- | :--- |
-| **UI Engine** | `app.py` | Streamlit-based interface with custom premium CSS and session management. |
-| **Knowledge Loader** | `core/loader.py` | Advanced PDF parsing using OCR and table structure inference. |
-| **Logic Layer** | `core/rag_chain.py` | Manages the RAG pipeline, question reformulation, and LLM orchestration. |
-| **Vector Engine**| `core/vector_store.py` | Handles local FAISS indexing and vector similarity search. |
-| **Memory Manager**| `core/history.py` | Local JSON-based persistence for chat sessions and history tracking. |
 
 ---
 
-## 🛠️ Tech Stack
+## 📂 Project Structure & Module Rationale
 
-- **Core**: Python 3.14, LangChain (LCEL)
-- **LLM**: Google Gemini 2.5 Flash
-- **Vector Store**: FAISS (Facebook AI Similarity Search)
-- **OCR/Layout**: Unstructured, Tesseract OCR, Poppler
-- **Frontend**: Streamlit (with Custom CSS Overlays)
+### `app.py` (The Command Center)
+- **What**: The main entry point and User Interface.
+- **Why**: Built with Streamlit for a premium, responsive, and interactive experience. It handles session states, file uploads, and real-time chat rendering.
 
-## 📥 Installation
+### `core/loader.py` (The Eye)
+- **What**: Handles document extraction using the `Unstructured` ecosystem.
+- **Why**: Configured with `hi_res` strategy to ensure **OCR** (Optical Character Recognition) is applied to images and **Table Structure** is preserved. This is specifically designed to solve "Fig 1" or "Table 2" rendering issues by reconstructing the visual data into text for the AI.
+
+### `core/splitter.py` (The Optimizer)
+- **What**: Breaks large documents into manageable fragments (chunks).
+- **Why**: LLMs have limited "context windows." By splitting text with smart overlap, we ensure the AI gets the most relevant information without losing surrounding context.
+
+### `core/vector_store.py` (The Memory)
+- **What**: Manages a local **FAISS** (Facebook AI Similarity Search) database and **Google Embeddings**.
+- **Why**: Converts text into mathematical vectors. Instead of searching by keywords, the AI searches by *meaning* (semantic search), allowing it to find answers even if the wording is different.
+
+### `core/rag_chain.py` (The Brain)
+- **What**: Orchestrates the interaction between the user, the database, and the LLM.
+- **Why**: Implements "Conversation Memory." It reformulates follow-up questions (e.g., "Tell me more about *it*") into standalone questions so the retrieval stays accurate throughout a long chat.
+
+### `core/auth.py` & `history.py` (Personalization)
+- **What**: User registration and per-user chat history storage.
+- **Why**: Ensures multi-user capability and persists conversations. Includes an auto-cleanup feature for chats older than 7 days to keep the system lean.
+
+---
+
+## 🛠️ Technical Setup
 
 ### 1. Prerequisites
-You must have **Tesseract OCR** and **Poppler** installed and added to your System PATH.
-- [Tesseract Installer](https://github.com/UB-Mannheim/tesseract/wiki)
-- [Poppler Binaries](https://github.com/oschwartz10612/poppler-windows/releases)
+- **Tesseract OCR**: Required for image/PDF text extraction.
+- **Poppler**: Required for PDF rendering/conversion.
 
-### 2. Setup
+### 2. Installation
 ```bash
-# Clone the repository
-git clone https://github.com/KalpShah1384/rag_assistant.git
-cd rag_assistant
-
-# Create virtual environment
-python -m venv venv
-.\venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Environment Variables
-Create a `.env` file in the root directory and add your API Key:
+### 3. Configuration
+Create a `.env` file with your Google API Key:
 ```env
-GOOGLE_API_KEY=your_gemini_api_key_here
+GOOGLE_API_KEY=your_key_here
 ```
 
-## 🚀 Usage
-
-```bash
-streamlit run app.py
-```
-
-1. **Upload**: Drop your PDF files into the sidebar (up to 500MB).
-2. **Process**: Click "Process & Index" to build the knowledge base.
-3. **Chat**: Ask complex questions about the text, tables, or charts.
-
-## 🚢 Deployment (Hugging Face Spaces)
-
-This project is optimized for Hugging Face Spaces. 
-1. Create a new **Streamlit Space**.
-2. Upload all files (including `packages.txt`).
-3. Add your `GOOGLE_API_KEY` to the Space's **Secrets**.
-4. Hugging Face will automatically install Tesseract and Poppler via `packages.txt`.
-
-## 🛡️ Security
-The project uses `.gitignore` to ensure your `.env` and local databases are NEVER uploaded to public repositories.
+### 4. Running the App
+- **Web Interface (Recommended)**:
+  ```bash
+  streamlit run app.py
+  ```
+- **CLI Interface (Fast Debugging)**:
+  ```bash
+  python main.py
+  ```
 
 ---
-Advanced document intelligence for the modern era.
+
+## 🌟 Premium Features
+- **Semantic Answer Grounding**: Provides sources for every claim.
+- **Table & Image Support**: Advanced ingestion captures complex document layouts.
+- **Multi-User Security**: Encrypted password hashing and separate chat silos.
+- **Self-Healing Chain**: Retry logic for API stability during high traffic.
