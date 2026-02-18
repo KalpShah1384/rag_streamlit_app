@@ -20,7 +20,7 @@ def get_rag_chain(persist_directory: str = "faiss_db"):
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
     # 2. Define the LLM (using the verified Gemini model)
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
     # 3. Define the RAG Prompt
     template = """You are an AI Knowledge Assistant. Use the following pieces of retrieved context to answer the question. 
@@ -53,7 +53,7 @@ def get_rag_chain_with_sources(persist_directory: str = "faiss_db"):
     """
     vector_store = load_vector_store(persist_directory)
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
     template = """You are an AI Knowledge Assistant. Use the following pieces of retrieved context to answer the question. 
 If you don't know the answer, just say that you don't know, don't try to make up an answer.
@@ -92,7 +92,7 @@ def get_rag_chain_with_memory(persist_directory: str = "faiss_db"):
     """
     vector_store = load_vector_store(persist_directory)
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
     # Contextualize question prompt
     # This helps in handling follow-up questions by re-writing them based on history
@@ -149,7 +149,7 @@ def get_rag_chain_with_memory_and_sources(persist_directory: str = "faiss_db"):
     """
     vector_store = load_vector_store(persist_directory)
     retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
     # 1. Contextualize Question
     contextualize_q_system_prompt = """Given a chat history and the latest user question \
