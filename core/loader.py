@@ -20,10 +20,13 @@ def load_pdf(file_path: str) -> List[Document]:
     Loads a PDF file optimized for Cloud/Mobile stability.
     Uses 'fast' strategy to prevent memory (OOM) crashes on 1GB RAM targets.
     """
-    # Use 'fast' for better performance and lower RAM usage
+    # Use 'hi_res' for better document understanding (tables/images)
     loader = UnstructuredPDFLoader(
         file_path,
-        strategy="fast", 
+        strategy="hi_res",
+        extract_images_in_pdf=True,
+        infer_table_structure=True,
+        chunking_strategy="by_title",
     )
     return loader.load()
 
