@@ -353,36 +353,49 @@ with st.sidebar:
                 os.makedirs("temp_uploads")
             
             total_files = len(uploaded_files)
-            for i, uploaded_file in enumerate(uploaded_files):
-                status_text.text(f"📥 Extracting: {uploaded_file.name}...")
-                file_path = os.path.join("temp_uploads", uploaded_file.name)
-                with open(file_path, "wb") as f:
-                    f.write(uploaded_file.getbuffer())
-                
-                # Update progress
-                progress_bar.progress((i + 1) / (total_files * 2)) 
-                
-                # Load with Unstructured (OCR enabled)
-                loader_docs = load_pdf(file_path)
-                all_docs.extend(loader_docs)
-
-            status_text.text("⚡ Analyzing tables and chunking text...")
-            chunks = split_documents(all_docs)
-            progress_bar.progress(0.8)
-            
-            status_text.text("💾 Persisting to Vector DB...")
             try:
+                for i, uploaded_file in enumerate(uploaded_files):
+                    status_text.text(f"📥 Extracting: {uploaded_file.name}...")
+                    file_path = os.path.join("temp_uploads", uploaded_file.name)
+                    with open(file_path, "wb") as f:
+                        f.write(uploaded_file.getbuffer())
+                    
+                    # Update progress
+                    progress_bar.progress((i + 1) / (total_files * 2)) 
+                    
+                    # Load Documents
+                    try:
+                        loader_docs = load_pdf(file_path)
+                        all_docs.extend(loader_docs)
+                    except Exception as le:
+                        st.error(f"Error loading {uploaded_file.name}: {str(le)}")
+                        continue
+
+                if not all_docs:
+                    st.error("No text could be extracted from the uploaded files.")
+                    st.stop()
+
+                status_text.text("⚡ Chunking text...")
+                chunks = split_documents(all_docs)
+                progress_bar.progress(0.8)
+                
+                status_text.text("💾 Persisting to Vector DB...")
                 create_vector_store(chunks, persist_directory="app_db")
+                
+                progress_bar.progress(1.0)
+                status_text.text("✅ Ingestion Complete!")
+                st.session_state.process_complete = True
+                time.sleep(1)
+                status_text.empty()
+                st.rerun()
             except Exception as e:
-                st.error(f"FATAL: Vector Store Error: {str(e)}")
-                st.stop()
-            
-            progress_bar.progress(1.0)
-            status_text.text("✅ Ingestion Complete!")
-            st.session_state.process_complete = True
-            time.sleep(1)
-            status_text.empty()
-            st.rerun()
+                st.error(f"FATAL: Ingestion Error: {str(e)}")
+                # Log the error for debugging
+                import traceback
+                print(f"Ingestion Traceback: {traceback.format_exc()}")
+            finally:
+                # Cleanup if needed
+                pass
         else:
             st.error("Please select a file first.")
 
