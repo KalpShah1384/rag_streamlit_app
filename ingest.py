@@ -9,16 +9,16 @@ def test_ingestion():
         print(f"❌ Error: {sample_file} not found.")
         return
 
-    print(f"Loading documents from {sample_file}...")
+    print(f"📖 Loading documents from {sample_file}...")
     docs = load_pdf(sample_file)
-    print(f"Loaded {len(docs)} document(s).")
+    print(f"✅ Loaded {len(docs)} document(s).")
 
-    print(f"Splitting documents into chunks...")
+    print(f"✂️ Splitting documents into chunks...")
     chunks = split_documents(docs, chunk_size=200, chunk_overlap=20)
-    print(f"Created {len(chunks)} chunks.")
+    print(f"✅ Created {len(chunks)} chunks.")
 
     if chunks:
-        print("\nFirst Chunk Preview:")
+        print("\n📄 First Chunk Preview:")
         print("-" * 30)
         print(chunks[0].page_content)
         print("-" * 30)
