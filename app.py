@@ -192,7 +192,7 @@ with st.sidebar:
     
     uploaded_files = st.file_uploader("Upload PDF Documents", accept_multiple_files=True, type=['pdf'])
     
-    if st.button("🚀 Index to Qdrant Cloud", use_container_width=True, disabled=not QDRANT_READY):
+    if st.button("🚀 Process the Document", use_container_width=True, disabled=not QDRANT_READY):
         if uploaded_files:
             progress_bar = st.progress(0)
             status_text = st.empty()
@@ -271,7 +271,6 @@ with st.sidebar:
 
 # --- MAIN INTERFACE ---
 st.markdown('<h1 class="main-title">AI Knowledge Assistant</h1>', unsafe_allow_html=True)
-st.markdown('<p style="color: #8B949E; margin-bottom: 2rem;">Cloud-Synchronized Document Intelligence & Specialized RAG</p>', unsafe_allow_html=True)
 
 # Chat Display
 for message in st.session_state.messages:
