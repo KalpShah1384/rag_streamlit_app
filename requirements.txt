@@ -4,6 +4,7 @@ langchain-community
 langchain-core
 langchain-google-genai
 langchain-text-splitters
+langchain-qdrant
 google-generativeai
 python-dotenv
 unstructured
@@ -13,11 +14,11 @@ pdf2image
 pi_heif
 python-magic
 python-multipart
-faiss-cpu
 lxml
 pypdf
 pypdfium2
 uuid_utils
 sqlalchemy
 rank-bm25
-sentence-transformers
+qdrant-client
+tenacity

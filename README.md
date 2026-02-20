@@ -1,98 +1,50 @@
-# 🧠 AI Knowledge Hub PRO
+# AI Knowledge Assistant PRO (Cloud Edition)
 
-An advanced RAG (Retrieval-Augmented Generation) system built with **Streamlit**, **LangChain**, and **Google Gemini**. This system is designed for professional document intelligence, supporting high-resolution PDF parsing, table extraction, and image OCR.
+A high-performance RAG (Retrieval-Augmented Generation) system optimized for Streamlit Community Cloud, featuring Qdrant Cloud synchronization, Gemini-powered intelligence, and automated session management.
 
----
+## 🌟 Key Features
 
-## 📊 Data Flow Diagram (DFD)
+- **Cloud Core**: Seamlessly migrates from local storage to **Qdrant Cloud** for persistent, scalable document indexing.
+- **Smart Cleanup**: Automated session management that clears activity and temporary data after **1 hour** of inactivity to optimize space.
+- **Cloud Optimized**: Specialized loading strategies (`auto`) and resource management to ensure stability on platforms with limited RAM (e.g., Streamlit Cloud 1GB limit).
+- **Premium Intelligence**: Built on **Google Gemini 1.5 Flash** for rapid, accurate document analysis and table understanding.
+- **Advanced UI**: sleek glassmorphism design with responsive sidebar and smooth animations.
+- **Quota Resilience**: Robust error handling and exponential backoff retry logic for embedding API calls.
 
-This diagram explains how data moves from your local documents to the AI's response.
-
-```mermaid
-graph TD
-    subgraph "Phase 1: Ingestion (Knowledge Base)"
-        A[User Uploads PDF] --> B[core/loader.py: Hi-Res Parsing/OCR]
-        B --> C[core/splitter.py: Logical Chunking]
-        C --> D[core/vector_store.py: Google Embeddings]
-        D --> E[(FAISS Vector DB: 'app_db')]
-    end
-
-    subgraph "Phase 2: Retrieval & Generation"
-        F[User Asks Question] --> G[core/rag_chain.py: Contextualizer]
-        H[(core/history.py: Chat History)] --> G
-        G --> I[Standalone Question]
-        I --> J[Vector Store Search]
-        E --> J
-        J --> K[Retrieved Context Docs]
-        K --> L[Augmented Prompt]
-        L --> M[Gemini 1.5 Flash LLM]
-        M --> N[Final Answer + Sources]
-    end
-
-    N --> O[Streamlit UI: app.py]
-```
-
----
-
-## 📂 Project Structure & Module Rationale
-
-### `app.py` (The Command Center)
-- **What**: The main entry point and User Interface.
-- **Why**: Built with Streamlit for a premium, responsive, and interactive experience. It handles session states, file uploads, and real-time chat rendering.
-
-### `core/loader.py` (The Eye)
-- **What**: Handles document extraction using the `Unstructured` ecosystem.
-- **Why**: Configured with `hi_res` strategy to ensure **OCR** (Optical Character Recognition) is applied to images and **Table Structure** is preserved. This is specifically designed to solve "Fig 1" or "Table 2" rendering issues by reconstructing the visual data into text for the AI.
-
-### `core/splitter.py` (The Optimizer)
-- **What**: Breaks large documents into manageable fragments (chunks).
-- **Why**: LLMs have limited "context windows." By splitting text with smart overlap, we ensure the AI gets the most relevant information without losing surrounding context.
-
-### `core/vector_store.py` (The Memory)
-- **What**: Manages a local **FAISS** (Facebook AI Similarity Search) database and **Google Embeddings**.
-- **Why**: Converts text into mathematical vectors. Instead of searching by keywords, the AI searches by *meaning* (semantic search), allowing it to find answers even if the wording is different.
-
-### `core/rag_chain.py` (The Brain)
-- **What**: Orchestrates the interaction between the user, the database, and the LLM.
-- **Why**: Implements "Conversation Memory." It reformulates follow-up questions (e.g., "Tell me more about *it*") into standalone questions so the retrieval stays accurate throughout a long chat.
-
-### `core/auth.py` & `history.py` (Personalization)
-- **What**: User registration and per-user chat history storage.
-- **Why**: Ensures multi-user capability and persists conversations. Includes an auto-cleanup feature for chats older than 7 days to keep the system lean.
-
----
-
-## 🛠️ Technical Setup
+## 🚀 Getting Started
 
 ### 1. Prerequisites
-- **Tesseract OCR**: Required for image/PDF text extraction.
-- **Poppler**: Required for PDF rendering/conversion.
+- Python 3.9+
+- Google Gemini API Key
+- Qdrant Cloud Account (Free tier works perfectly)
 
-### 2. Installation
+### 2. Configuration
+Create a `.env` file in the root directory:
+```env
+GOOGLE_API_KEY=your_gemini_api_key
+QDRANT_URL=your_qdrant_cloud_url
+QDRANT_API_KEY=your_qdrant_cloud_api_key
+QDRANT_COLLECTION_NAME=knowledge_hub
+```
+
+### 3. Installation
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configuration
-Create a `.env` file with your Google API Key:
-```env
-GOOGLE_API_KEY=your_key_here
+### 4. Run Locally
+```bash
+streamlit run app.py
 ```
 
-### 4. Running the App
-- **Web Interface (Recommended)**:
-  ```bash
-  streamlit run app.py
-  ```
-- **CLI Interface (Fast Debugging)**:
-  ```bash
-  python main.py
-  ```
+## ☁️ Deployment on Streamlit Cloud
 
----
+1. Push your code to a GitHub repository.
+2. In Streamlit Community Cloud:
+   - Add the variables from `.env` to **Secrets**.
+   - Ensure `packages.txt` is present (handled automatically in this repo).
+   - Set the main file to `app.py`.
 
-## 🌟 Premium Features
-- **Semantic Answer Grounding**: Provides sources for every claim.
-- **Table & Image Support**: Advanced ingestion captures complex document layouts.
-- **Multi-User Security**: Encrypted password hashing and separate chat silos.
-- **Self-Healing Chain**: Retry logic for API stability during high traffic.
+## 🛠️ Optimization Notes
+- **Memory**: The app uses the `auto` strategy for PDF loading, which balances accuracy and memory. Image extraction is disabled by default for cloud stability.
+- **Persistence**: unlike local storage, Qdrant Cloud ensures your documents are indexed once and accessible across sessions.

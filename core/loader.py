@@ -18,13 +18,14 @@ else:
 def load_pdf(file_path: str) -> List[Document]:
     """
     Loads a PDF file optimized for Cloud/Mobile stability.
-    Uses 'fast' strategy to prevent memory (OOM) crashes on 1GB RAM targets.
+    Uses 'auto' strategy to prevent memory (OOM) crashes on 1GB RAM targets.
     """
-    # Use 'hi_res' for better document understanding (tables/images)
+    # Changed from 'hi_res' to 'auto' for platform stability
+    # Disabled image extraction to save RAM on Streamlit Community Cloud
     loader = UnstructuredPDFLoader(
         file_path,
-        strategy="hi_res",
-        extract_images_in_pdf=True,
+        strategy="auto", 
+        extract_images_in_pdf=False,
         infer_table_structure=True,
         chunking_strategy="by_title",
     )
