@@ -17,7 +17,7 @@ def check_model(name):
 
 if __name__ == "__main__":
     # Test common ones to find ANY that works
-    check_model("gemini-2.5-flash")
+    check_model("gemini-2.5-flash-lite")
     check_model("gemini-1.5-flash")
     check_model("gemini-2.0-flash-exp")
     check_model("gemini-pro")

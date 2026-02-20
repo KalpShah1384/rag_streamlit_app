@@ -13,7 +13,7 @@ def test_connection():
 
     try:
         # Initialize ChatGoogleGenerativeAI
-        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
         
         print("⏳ Sending test request to Google Gemini...")
         response = llm.invoke("Hello, how are you?")

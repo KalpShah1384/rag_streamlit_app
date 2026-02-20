@@ -23,7 +23,7 @@ if os.name == 'nt' and os.path.exists(TESSERACT_PATH):
     os.environ["TESSDATA_PREFIX"] = TESSDATA_PREFIX
 
 GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY")
-IMAGE_MODEL = "gemini/gemini-2.5-flash"
+IMAGE_MODEL = "gemini/gemini-2.5-flash-lite"
 LLM_IMAGE_PROMPT = """Analyze this document page image. 
 1. Describe any charts, graphs, or tables in detail.
 2. If there are images or diagrams, explain what they represent.
