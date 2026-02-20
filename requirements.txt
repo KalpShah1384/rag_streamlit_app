@@ -21,4 +21,8 @@ uuid_utils
 sqlalchemy
 rank-bm25
 qdrant-client
+pymupdf
+Pillow
+litellm
 tenacity
+

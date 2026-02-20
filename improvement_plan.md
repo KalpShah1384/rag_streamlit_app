@@ -13,7 +13,16 @@
     - Implement a timestamp-based check in `app.py`.
     - Automatically reset `st.session_state` and clear temporary files if the session expires.
 
-## 3. Stability & Cloud Optimization (Streamlit Community Cloud Fix)
+## 3. Multimodal Knowledge Extraction (Gemini Vision)
+- **Goal**: Capture information from charts, graphs, and images that traditional OCR misses.
+- **Action**:
+    - Integrated `PyMuPDF` (fitz) for intelligent page scanning.
+    - Added image-filtering logic (width > 300, height > 120) to focus on significant content.
+    - Used Gemini 1.5 Flash to generate semantic descriptions of visual pages.
+    - Descriptions are indexed as first-class documents in Qdrant, enabling "visual search".
+
+## 4. Stability & Cloud Optimization (Streamlit Community Cloud Fix)
+
 - **Goal**: Prevent crashes on Streamlit Cloud due to the 1GB RAM limit.
 - **Action**:
     - **Document Loading**: Change `UnstructuredPDFLoader` strategy from `hi_res` to `auto` or `fast` to reduce memory consumption.

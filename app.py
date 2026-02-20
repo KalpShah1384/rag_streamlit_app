@@ -212,12 +212,24 @@ with st.sidebar:
                 progress_bar.progress((i + 1) / (total_files * 2)) 
                 
                 try:
-                    loader_docs = load_pdf(file_path)
-                    all_docs.extend(loader_docs)
+                    # 1. Extract Text (Fast strategy)
+                    status_text.text(f"📥 Extracting Text: {uploaded_file.name}...")
+                    text_docs = load_pdf(file_path)
+                    all_docs.extend(text_docs)
+                    
+                    # 2. Extract Visual Content (Gemini Vision)
+                    from core.loader import process_pdf_images
+                    status_text.text(f"👁️ Analyzing Visuals: {uploaded_file.name}...")
+                    visual_docs = process_pdf_images(file_path, uploaded_file.name)
+                    all_docs.extend(visual_docs)
+                    
                     # Cleanup local file after loading
-                    os.remove(file_path)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
                 except Exception as e:
                     st.error(f"Error loading {uploaded_file.name}: {str(e)}")
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
 
             status_text.text("⚡ Optimizing & Splitting...")
             chunks = split_documents(all_docs)
